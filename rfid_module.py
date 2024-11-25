@@ -12,7 +12,7 @@ from flask import Flask, jsonify
 class HardwareController:
     """하드웨어 제어 클래스: LED 및 부저 제어 담당"""
     
-    def __init__(self, green_led_pin=18, red_led_pin=23, buzzer_pin=24):
+    def __init__(self, green_led_pin=15, red_led_pin=14, buzzer_pin=10):
         # GPIO 초기화
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False)
@@ -51,8 +51,8 @@ class HardwareController:
         """실패 표시: 빨간 LED 깜박임 + 부저 2회 울림"""
         for _ in range(2):
             self._beep(0.1)
+            self._blink_led(self.pins['red_led'], 0.1)
             time.sleep(0.1)
-        self._blink_led(self.pins['red_led'], 2)
 
     def start_enrollment_indicator(self):
         """등록 시작 표시: 녹색 LED 깜박임"""
@@ -197,14 +197,16 @@ API_BASE_URL = "http://your-remote-server:5000"
 REQUEST_TIMEOUT = 5
 CARD_READ_TIMEOUT = 1
 
-DEVICE_MODE = # To Fulfill
+DEVICE_MODE = READER_MODE # To Fulfill
 
 if __name__ == "__main__":
     try:
+        handler = PN532Handler(device_mode=DEVICE_MODE)
+
         if DEVICE_MODE == READER_MODE:
-            PN532Handler.check_card_access()
+            handler.check_card_access()
         else:
-            PN532Handler.start_enrollment_server()
+            handler.start_enrollment_server()
             
     except Exception as e:
         print(f"프로그램 오류: {str(e)}")
