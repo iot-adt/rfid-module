@@ -154,11 +154,10 @@ class PN532Handler:
                     time.sleep(0.5)
                     continue
                     
-                # response = requests.post(
-                #     f"{API_BASE_URL}/users/enroll", # Check Here
-                #     json={'card_id': card_id},
-                #     timeout=REQUEST_TIMEOUT
-                # )
+                response = requests.post(
+                    f"{API_BASE_URL}/temporary-user?rfid={card_id}",
+                )
+                print(response)
                 self.hw.indicate_success()
                 print(f"등록합니다, 카드 ID: {card_id}")
                 time.sleep(3)
@@ -174,7 +173,7 @@ class PN532Handler:
 # 상수 정의
 READER_MODE = 0
 ENROLLER_MODE = 1
-API_BASE_URL = "http://your-remote-server:5000"
+API_BASE_URL = "http://10.144.85.43:8080/api"
 REQUEST_TIMEOUT = 5
 CARD_READ_TIMEOUT = 1
 
