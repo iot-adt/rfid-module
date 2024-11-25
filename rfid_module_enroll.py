@@ -201,7 +201,7 @@ DEVICE_MODE = ENROLLER_MODE # To Fulfill
 
 if __name__ == "__main__":
     try:
-        handler = PN532Handler(DEVICE_MODE)
+        handler = PN532Handler(device_mode = DEVICE_MODE)
         if DEVICE_MODE == READER_MODE:
             handler.check_card_access()
         else:
