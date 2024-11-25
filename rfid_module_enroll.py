@@ -151,6 +151,7 @@ class PN532Handler:
                 
                 if card_id is None:
                     self.hw.indicate_failure()
+                    time.sleep(0.5)
                     continue
                     
                 # response = requests.post(
@@ -160,8 +161,7 @@ class PN532Handler:
                 # )
                 self.hw.indicate_success()
                 print(f"등록합니다, 카드 ID: {card_id}")
-
-                time.sleep(0.5)
+                time.sleep(3)
                 
         except Exception as e:
             self.hw.indicate_failure()
