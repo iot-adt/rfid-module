@@ -121,13 +121,15 @@ class PN532Handler:
                         timeout=REQUEST_TIMEOUT
                     )
                     users = response.json() 
+                    print(f"users: {users}")
                     matched_user = list(filter(lambda user: user.get('rfid') == card_id, users))
-        
+                    print(f"matched_user: {matched_user}")
                     if matched_user:
                         print(f"환영합니다, 카드 ID: {card_id}")
+                        user = matched_user[0]
                         post_data = {
                             "method": "rfid",
-                            "userId": matched_user.get('id'),
+                            "userId": user.get('id'),
                             "result": True
                         }
                         requests.post(
