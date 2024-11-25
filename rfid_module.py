@@ -151,7 +151,7 @@ class PN532Handler:
                 except requests.RequestException as e:
                     print(f"서버 연결 실패: {str(e)}")
                     self.hw.indicate_failure()
-                
+
                 time.sleep(0.5)
                 
         except KeyboardInterrupt:
@@ -215,7 +215,7 @@ class PN532Handler:
 # 상수 정의
 READER_MODE = 0
 ENROLLER_MODE = 1
-API_BASE_URL = "http://your-remote-server:5000"
+API_BASE_URL = "http://10.144.85.43:8080/api"g
 REQUEST_TIMEOUT = 5
 CARD_READ_TIMEOUT = 1
 
