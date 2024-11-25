@@ -142,48 +142,33 @@ class PN532Handler:
         if self.device_mode != ENROLLER_MODE:
             raise RuntimeError("현재 장치는 등록기 모드가 아닙니다.")
             
-        app = Flask(__name__)
+        print("\n카드 접근 검증 모드 시작... Ctrl+C로 종료.")
         
-        @app.route('/api', methods=['POST'])
-        def enroll():
-            try:
+        try:
+            while True:
                 self.hw.start_enrollment_indicator()  # 등록 시작 표시
                 card_id = self.read_card(timeout=10)
                 
                 if card_id is None:
                     self.hw.indicate_failure()
-                    return jsonify({'status': 'error', 'message': '카드 읽기 시간 초과'}), 408
+                    continue
                     
-                response = requests.post(
-                    f"{API_BASE_URL}/users/enroll", # Check Here
-                    json={'card_id': card_id},
-                    timeout=REQUEST_TIMEOUT
-                )
-                
-                if response.status_code == 200:
-                    self.hw.indicate_success()
-                    return jsonify({
-                        'type': 'rfid',
-                        'card_id': card_id,
-                        'status': 'success',
-                        'message': '카드 등록 성공'
-                    })
-                else:
-                    self.hw.indicate_failure()
-                    return jsonify({
-                        'status': 'error',
-                        'message': '원격 서버 등록 실패'
-                    }), 500
-                    
-            except Exception as e:
-                self.hw.indicate_failure()
-                return jsonify({
-                    'status': 'error',
-                    'message': str(e)
-                }), 500
+                # response = requests.post(
+                #     f"{API_BASE_URL}/users/enroll", # Check Here
+                #     json={'card_id': card_id},
+                #     timeout=REQUEST_TIMEOUT
+                # )
+                self.hw.indicate_success()
+                print(f"등록합니다, 카드 ID: {card_id}")
 
-        Thread(target=lambda: app.run(host='0.0.0.0', port=port, debug=False)).start()
-        print(f"등록 서버가 포트 {port}에서 시작되었습니다.")
+                time.sleep(0.5)
+                
+        except Exception as e:
+            self.hw.indicate_failure()
+            return jsonify({
+                'status': 'error',
+                'message': str(e)
+            }), 500
 
     def __del__(self):
         """소멸자: 하드웨어 리소스 정리"""
