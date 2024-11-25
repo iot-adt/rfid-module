@@ -117,7 +117,7 @@ class PN532Handler:
                 
                 try:
                     response = requests.get(
-                        f"{API_BASE_URL}/api/users", # Check Here
+                        f"{API_BASE_URL}/users", # Check Here
                         timeout=REQUEST_TIMEOUT
                     )
                     users = response.json() 
@@ -133,7 +133,7 @@ class PN532Handler:
                             "result": True
                         }
                         requests.post(
-                            f"{API_BASE_URL}/api/users", 
+                            f"{API_BASE_URL}/users", 
                             json=post_data,
                             timeout=REQUEST_TIMEOUT
                         )
@@ -144,7 +144,7 @@ class PN532Handler:
                             "result": False
                         }
                         requests.post(
-                            f"{API_BASE_URL}/api/users", 
+                            f"{API_BASE_URL}/users", 
                             json=post_data,
                             timeout=REQUEST_TIMEOUT
                         )
