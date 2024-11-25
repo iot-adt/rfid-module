@@ -142,7 +142,7 @@ class PN532Handler:
         if self.device_mode != ENROLLER_MODE:
             raise RuntimeError("현재 장치는 등록기 모드가 아닙니다.")
             
-        print("\n카드 접근 검증 모드 시작... Ctrl+C로 종료.")
+        print("\n카드 등록 모드 시작... Ctrl+C로 종료.")
         
         try:
             while True:
@@ -165,10 +165,6 @@ class PN532Handler:
                 
         except Exception as e:
             self.hw.indicate_failure()
-            return jsonify({
-                'status': 'error',
-                'message': str(e)
-            }), 500
 
     def __del__(self):
         """소멸자: 하드웨어 리소스 정리"""
