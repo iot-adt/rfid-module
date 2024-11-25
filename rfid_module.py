@@ -202,9 +202,9 @@ DEVICE_MODE = # To Fulfill
 if __name__ == "__main__":
     try:
         if DEVICE_MODE == READER_MODE:
-            handler.check_card_access()
+            PN532Handler.check_card_access()
         else:
-            handler.start_enrollment_server()
+            PN532Handler.start_enrollment_server()
             
     except Exception as e:
         print(f"프로그램 오류: {str(e)}")
