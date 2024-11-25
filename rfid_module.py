@@ -133,7 +133,7 @@ class PN532Handler:
                             "result": True
                         }
                         requests.post(
-                            f"{API_BASE_URL}/users", 
+                            f"{API_BASE_URL}/access/log", 
                             json=post_data,
                             timeout=REQUEST_TIMEOUT
                         )
@@ -144,7 +144,7 @@ class PN532Handler:
                             "result": False
                         }
                         requests.post(
-                            f"{API_BASE_URL}/users", 
+                            f"{API_BASE_URL}/access/log", 
                             json=post_data,
                             timeout=REQUEST_TIMEOUT
                         )
