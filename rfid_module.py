@@ -117,13 +117,35 @@ class PN532Handler:
                 
                 try:
                     response = requests.get(
-                        f"{API_BASE_URL}/api/entry/{card_id}", # Check Here
+                        f"{API_BASE_URL}/api/users", # Check Here
                         timeout=REQUEST_TIMEOUT
                     )
-                    if response.status_code == 200 and response.json().get('allowed'):
+                    users = response.json() 
+                    matched_user = list(filter(lambda user: user.get('rfid') == card_id, users))
+        
+                    if matched_user:
                         print(f"환영합니다, 카드 ID: {card_id}")
+                        post_data = {
+                            "method": "rfid",
+                            "userId": matched_user.get('id'),
+                            "result": True
+                        }
+                        requests.post(
+                            f"{API_BASE_URL}/api/users", 
+                            json=post_data,
+                            timeout=REQUEST_TIMEOUT
+                        )
                         self.hw.indicate_success()
                     else:
+                        post_data = {
+                            "method": "rfid",
+                            "result": False
+                        }
+                        requests.post(
+                            f"{API_BASE_URL}/api/users", 
+                            json=post_data,
+                            timeout=REQUEST_TIMEOUT
+                        )
                         print(f"경고! 미승인 카드 ID: {card_id}")
                         self.hw.indicate_failure()
                 except requests.RequestException as e:
