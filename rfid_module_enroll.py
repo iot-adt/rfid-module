@@ -116,8 +116,6 @@ class PN532Handler:
         @app.before_request
         def log_request_info():
             print(f"\n[{datetime.now()}] {request.method} Request to {request.path}")
-            if request.get_json():
-                print(f"Request Data: {request.get_json()}")
 
         @app.after_request
         def log_response_info(response):
