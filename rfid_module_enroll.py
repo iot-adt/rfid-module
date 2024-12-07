@@ -9,6 +9,8 @@ import requests
 from threading import Thread
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+import wave
+import pyaudio
 
 class HardwareController:
     """하드웨어 제어 클래스: LED 및 부저 제어 담당"""
@@ -125,8 +127,32 @@ class PN532Handler:
         @app.route('/beep', methods=['POST'])
         def trigger_beep():
             try:
-                self.hw._beep(2)
-                return jsonify({"status": "success", "message": "Buzzer activated"}), 200
+                # 현재 디렉토리의 example.wav 파일 실행
+                wav_file = "example.wav"  # 같은 디렉토리에 있는 파일 이름만 지정
+
+                # 파일 열기
+                wf = wave.open(wav_file, 'rb')
+
+                # PyAudio 스트림 생성
+                p = pyaudio.PyAudio()
+                stream = p.open(format=p.get_format_from_width(wf.getsampwidth()),
+                               channels=wf.getnchannels(),
+                               rate=wf.getframerate(),
+                               output=True)
+
+                # 파일 데이터를 읽어서 스트림에 출력
+                data = wf.readframes(1024)
+                while data:
+                    stream.write(data)
+                    data = wf.readframes(1024)
+
+                # 스트림 종료
+                stream.stop_stream()
+                stream.close()
+                p.terminate()
+                wf.close()
+
+                return jsonify({"status": "success", "message": "Sound played successfully"}), 200
             except Exception as e:
                 print(f"Error: {str(e)}")
                 return jsonify({"status": "error", "message": str(e)}), 500
