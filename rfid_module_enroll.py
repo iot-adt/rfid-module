@@ -156,6 +156,9 @@ class PN532Handler:
             except Exception as e:
                 return jsonify({"status": "error", "message": str(e)}), 500
 
+        # Flask 서버를 별도 스레드에서 실행
+        Thread(target=lambda: app.run(host='0.0.0.0', port=port), daemon=True).start()
+            
         try:
             while True:
                 self.hw.start_enrollment_indicator()  # 등록 시작 표시
@@ -174,8 +177,12 @@ class PN532Handler:
                 print(f"카드 임시 등록 성공, 카드 ID: {card_id}")
                 time.sleep(3)
                 
+        except KeyboardInterrupt:
+            print("\n프로그램 종료...")
         except Exception as e:
             self.hw.indicate_failure()
+        finally:
+            GPIO.cleanup()
 
     def __del__(self):
         """소멸자: 하드웨어 리소스 정리"""
