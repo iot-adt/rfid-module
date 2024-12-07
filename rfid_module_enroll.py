@@ -123,9 +123,17 @@ class PN532Handler:
         def log_response_info(response):
             print(f"[{datetime.now()}] Response Status: {response.status}")
             return response
-
         @app.route('/beep', methods=['POST'])
         def trigger_beep():
+            try:
+                self.hw._beep(2)
+                return jsonify({"status": "success", "message": "Buzzer activated"}), 200
+            except Exception as e:
+                print(f"Error: {str(e)}")
+                return jsonify({"status": "error", "message": str(e)}), 500
+
+        @app.route('/alarm', methods=['POST'])
+        def trigger_alarm():
             try:
                 # 현재 디렉토리의 example.wav 파일 실행
                 wav_file = "example.wav"  # 같은 디렉토리에 있는 파일 이름만 지정
