@@ -8,11 +8,12 @@ import RPi.GPIO as GPIO
 import requests
 from threading import Thread
 from flask import Flask, jsonify
+from flask_cors import CORS
 
 class HardwareController:
     """하드웨어 제어 클래스: LED 및 부저 제어 담당"""
     
-    def __init__(self, green_led_pin=18, red_led_pin=23, buzzer_pin=24):
+    def __init__(self, green_led_pin=15, red_led_pin=14, buzzer_pin=10):
         # GPIO 초기화
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False)
@@ -144,11 +145,22 @@ class PN532Handler:
             
         print("\n카드 등록 모드 시작... Ctrl+C로 종료.")
         
+        app = Flask(__name__)
+        CORS(app)  # Enable CORS for all routes
+
+        @app.route('/beep', methods=['POST'])
+        def trigger_beep():
+            try:
+                self.hw._beep()
+                return jsonify({"status": "success", "message": "Buzzer activated"}), 200
+            except Exception as e:
+                return jsonify({"status": "error", "message": str(e)}), 500
+
         try:
             while True:
                 self.hw.start_enrollment_indicator()  # 등록 시작 표시
                 card_id = self.read_card(timeout=10)
-                
+                print(f"카드 읽기 성공, 카드 ID: {card_id}")
                 if card_id is None:
                     self.hw.indicate_failure()
                     time.sleep(0.5)
@@ -159,7 +171,7 @@ class PN532Handler:
                 )
                 print(response)
                 self.hw.indicate_success()
-                print(f"등록합니다, 카드 ID: {card_id}")
+                print(f"카드 임시 등록 성공, 카드 ID: {card_id}")
                 time.sleep(3)
                 
         except Exception as e:
