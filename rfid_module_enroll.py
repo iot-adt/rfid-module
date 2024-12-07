@@ -7,7 +7,7 @@ from adafruit_pn532.i2c import PN532_I2C
 import RPi.GPIO as GPIO
 import requests
 from threading import Thread
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 class HardwareController:
@@ -113,9 +113,19 @@ class PN532Handler:
         app = Flask(__name__)
         CORS(app)  # Enable CORS for all routes
 
+        @app.before_request
+        def log_request_info():
+            print(f"\n[{datetime.now()}] {request.method} Request to {request.path}")
+            if request.get_json():
+                print(f"Request Data: {request.get_json()}")
+
+        @app.after_request
+        def log_response_info(response):
+            print(f"[{datetime.now()}] Response Status: {response.status}")
+            return response
+
         @app.route('/beep', methods=['POST'])
         def trigger_beep():
-            printf("beep api called")
             try:
                 self.hw._beep(2)
                 return jsonify({"status": "success", "message": "Buzzer activated"}), 200
