@@ -45,13 +45,11 @@ class HardwareController:
 
     def indicate_success(self):
         """성공 표시: 녹색 LED 켜짐 + 부저 1회 울림"""
-        self._beep(0.1)
         self._blink_led(self.pins['green_led'], 2)
 
     def indicate_failure(self):
         """실패 표시: 빨간 LED 깜박임 + 부저 2회 울림"""
         for _ in range(2):
-            self._beep(0.1)
             time.sleep(0.1)
         self._blink_led(self.pins['red_led'], 2)
 
@@ -151,7 +149,7 @@ class PN532Handler:
         @app.route('/beep', methods=['POST'])
         def trigger_beep():
             try:
-                self.hw._beep()
+                self.hw._beep(2)
                 return jsonify({"status": "success", "message": "Buzzer activated"}), 200
             except Exception as e:
                 return jsonify({"status": "error", "message": str(e)}), 500
