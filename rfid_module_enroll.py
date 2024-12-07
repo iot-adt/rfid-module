@@ -130,6 +130,7 @@ class PN532Handler:
                 self.hw._beep(2)
                 return jsonify({"status": "success", "message": "Buzzer activated"}), 200
             except Exception as e:
+                print(f"Error: {str(e)}")
                 return jsonify({"status": "error", "message": str(e)}), 500
 
         # Flask 서버를 별도 스레드에서 실행
