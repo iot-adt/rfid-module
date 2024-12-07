@@ -115,6 +115,7 @@ class PN532Handler:
 
         @app.route('/beep', methods=['POST'])
         def trigger_beep():
+            printf("beep api called")
             try:
                 self.hw._beep(2)
                 return jsonify({"status": "success", "message": "Buzzer activated"}), 200
