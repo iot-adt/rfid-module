@@ -13,7 +13,7 @@ from flask_cors import CORS
 class HardwareController:
     """하드웨어 제어 클래스: LED 및 부저 제어 담당"""
     
-    def __init__(self, green_led_pin=15, red_led_pin=14, buzzer_pin=10):
+    def __init__(self, green_led_pin=14, red_led_pin=15, buzzer_pin=10):
         # GPIO 초기화
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False)
@@ -102,39 +102,6 @@ class PN532Handler:
                 time.sleep(0.1)
         return None
 
-    def check_card_access(self):
-        """리더기 모드: 카드 읽기 및 권한 검증 지속"""
-        if self.device_mode != READER_MODE:
-            raise RuntimeError("현재 장치는 리더기 모드가 아닙니다.")
-            
-        print("\n카드 접근 검증 모드 시작... Ctrl+C로 종료.")
-        try:
-            while True:
-                card_id = self.read_card()
-                if card_id is None:
-                    continue
-                
-                try:
-                    response = requests.get(
-                        f"{API_BASE_URL}/api/entry/{card_id}", # Check Here
-                        timeout=REQUEST_TIMEOUT
-                    )
-                    if response.status_code == 200 and response.json().get('allowed'):
-                        print(f"환영합니다, 카드 ID: {card_id}")
-                        self.hw.indicate_success()
-                    else:
-                        print(f"경고! 미승인 카드 ID: {card_id}")
-                        self.hw.indicate_failure()
-                except requests.RequestException as e:
-                    print(f"서버 연결 실패: {str(e)}")
-                    self.hw.indicate_failure()
-                
-                time.sleep(0.5)
-                
-        except KeyboardInterrupt:
-            print("\n카드 검증 모드 종료.")
-        except Exception as e:
-            print(f"카드 검증 모드 오류: {str(e)}")
 
     def start_enrollment_server(self, port: int = 5000):
         """등록기 모드: Flask 서버 시작, 등록 명령 대기"""
@@ -163,7 +130,6 @@ class PN532Handler:
                 card_id = self.read_card(timeout=10)
                 print(f"카드 읽기 성공, 카드 ID: {card_id}")
                 if card_id is None:
-                    self.hw.indicate_failure()
                     time.sleep(0.5)
                     continue
                     
