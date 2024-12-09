@@ -170,7 +170,6 @@ class PN532Handler:
             
         try:
             while True:
-                self.hw.start_enrollment_indicator()  # 등록 시작 표시
                 card_id = self.read_card(timeout=10)
                 if card_id is None:
                     time.sleep(0.5)
