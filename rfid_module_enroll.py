@@ -172,11 +172,11 @@ class PN532Handler:
             while True:
                 self.hw.start_enrollment_indicator()  # 등록 시작 표시
                 card_id = self.read_card(timeout=10)
-                print(f"카드 읽기 성공, 카드 ID: {card_id}")
                 if card_id is None:
                     time.sleep(0.5)
                     continue
-                    
+                
+                print(f"카드 읽기 성공, 카드 ID: {card_id}")
                 response = requests.post(
                     f"{API_BASE_URL}/temporary-user?rfid={card_id}",
                 )
